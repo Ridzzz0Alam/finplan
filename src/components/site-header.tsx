@@ -1,73 +1,75 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowRightIcon } from "lucide-react";
 
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Logo } from "@/components/logo";
-import { MobileNav } from "@/components/mobile-nav";
-import { mainNav } from "@/lib/site";
-import { cn } from "cn";
+import { SiteMenuPanel, SiteMenuTrigger } from "@/components/site-menu";
+
+type Panel = "menu" | "language" | null;
 
 export function SiteHeader() {
-  const pathname = usePathname();
-  const [scrolled, setScrolled] = useState(false);
-
-  // The home page opens with a full-bleed hero, so the bar floats over it
-  // until the reader scrolls past the fold.
-  const overHero = pathname === "/" && !scrolled;
+  // Only one panel is ever open: both expand the bar, so they would otherwise
+  // fight over the same space.
+  const [panel, setPanel] = useState<Panel>(null);
+  const menuOpen = panel === "menu";
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    if (!panel) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setPanel(null);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [panel]);
+
+  // The menu covers the viewport, so the page behind it should not scroll.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [menuOpen]);
 
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-colors duration-300",
-        overHero
-          ? "bg-transparent text-white"
-          : "border-b border-border/60 bg-background/90 text-foreground backdrop-blur-md"
-      )}
-    >
-      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-6">
-        <nav className="hidden items-center gap-1 md:flex">
-          {mainNav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "rounded-sm px-3 py-2 text-sm font-medium transition-opacity hover:opacity-70",
-                overHero ? "text-white" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {item.title}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="justify-self-start md:justify-self-center">
-          <Logo inverted={overHero} />
+    <header className="fixed inset-x-0 top-0 z-50 bg-ink text-white">
+      {/* Full-bleed bar: menu and language on the left, logo centred on the
+          viewport, contact on the right. Items align to the top of the bar so
+          the panels below can expand it downwards. */}
+      <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-4 px-4 sm:px-6">
+        <div className="flex items-start gap-1 justify-self-start">
+          <div className="flex h-16 items-center">
+            <SiteMenuTrigger
+              open={menuOpen}
+              onToggle={() => setPanel(menuOpen ? null : "menu")}
+            />
+          </div>
+          <LanguageSwitcher
+            open={panel === "language"}
+            onOpenChange={(open) => setPanel(open ? "language" : null)}
+          />
         </div>
 
-        <div className="flex items-center gap-2 justify-self-end">
+        <Logo inverted className="h-16 justify-self-center text-white" />
+
+        <div className="flex h-16 items-center justify-self-end">
           <Link
             href="/contact"
-            className={cn(
-              "hidden items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-70 md:inline-flex",
-              overHero ? "text-white" : "text-foreground"
-            )}
+            aria-label="Contact us"
+            onClick={() => setPanel(null)}
+            className="flex h-10 items-center gap-2 rounded-sm px-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
           >
-            Contact us
-            <ArrowRightIcon className="size-4" />
+            <span className="hidden sm:inline">Contact us</span>
+            <ArrowRightIcon className="size-5" />
           </Link>
-          <MobileNav inverted={overHero} />
         </div>
       </div>
+
+      {menuOpen && <SiteMenuPanel onNavigate={() => setPanel(null)} />}
     </header>
   );
 }

@@ -25,3 +25,14 @@ export const mainNav = [
   { title: "About", href: "/about" },
   { title: "Contact", href: "/contact" },
 ] as const;
+
+/**
+ * Languages offered in the header switcher. Only the control is wired up for
+ * now — picking one records the choice but does not yet swap the site's copy.
+ */
+export const languages = [
+  { code: "en", label: "English" },
+  { code: "fi", label: "Suomi" },
+] as const;
+
+export type LanguageCode = (typeof languages)[number]["code"];
