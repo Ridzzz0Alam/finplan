@@ -7,14 +7,21 @@ import { useState } from "react";
 import { navTree, type NavNode } from "@/lib/nav";
 import { cn } from "cn";
 
-/** Three bars that fold into a cross when the menu opens. */
+/**
+ * Three bars that fold into a cross when the menu opens.
+ *
+ * The outer bars are placed symmetrically as percentages, not fixed offsets:
+ * the box is sized by --bar-icon, which is 1.5rem over the hero and 1.25rem
+ * once the bar condenses. Any symmetric inset keeps the three gaps even at
+ * both sizes, where a fixed px offset can only be right at one of them.
+ */
 function MenuGlyph({ open }: { open: boolean }) {
   const bar =
     "absolute left-0 h-0.5 w-full rounded-full bg-current transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]";
   return (
-    <span aria-hidden className="relative block size-5">
+    <span aria-hidden className="relative block size-(--bar-icon) transition-all duration-300 ease-out">
       <span
-        className={cn(bar, open ? "top-1/2 -translate-y-1/2 rotate-45" : "top-1")}
+        className={cn(bar, open ? "top-1/2 -translate-y-1/2 rotate-45" : "top-[15%]")}
       />
       <span
         className={cn(
@@ -26,7 +33,7 @@ function MenuGlyph({ open }: { open: boolean }) {
       <span
         className={cn(
           bar,
-          open ? "top-1/2 -translate-y-1/2 -rotate-45" : "top-[0.9375rem]"
+          open ? "top-1/2 -translate-y-1/2 -rotate-45" : "bottom-[15%]"
         )}
       />
     </span>
@@ -62,7 +69,7 @@ export function SiteMenuTrigger({
       aria-expanded={open}
       aria-controls="site-menu-panel"
       aria-label={open ? "Close menu" : "Open menu"}
-      className="flex h-10 items-center gap-2 rounded-sm px-2 text-sm font-medium text-white transition-colors outline-none hover:bg-white/10 focus-visible:bg-white/10"
+      className="flex h-10 items-center gap-2 rounded-sm px-2 text-(length:--bar-label) font-medium text-white transition-all duration-300 ease-out outline-none hover:bg-white/10 focus-visible:bg-white/10"
     >
       <MenuGlyph open={open} />
       <span className="hidden sm:inline">{open ? "Close" : "Menu"}</span>
@@ -107,9 +114,12 @@ export function SiteMenuPanel({
     <div
       id="site-menu-panel"
       data-closing={closing || undefined}
-      className="menu-panel h-[calc(100dvh-4rem)] overflow-auto px-4 pt-10 pb-16 sm:px-6"
+      className="menu-panel h-[calc(100dvh-var(--bar-height))] overflow-auto pt-10 pb-16"
     >
-      <div className="flex gap-10 sm:pl-9">
+      {/* Same container as the bar. The extra left padding lands the first
+          column under the trigger's label rather than under its icon: the
+          bar's own px-6 plus the icon (20px) and its 8px gap. */}
+      <div className="mx-auto flex w-full max-w-[97.5rem] gap-10 px-4 sm:px-6 sm:pl-13">
         {columns.map((nodes, column) => (
           <ul
             // Keying on the parent's index restarts the animation whenever a

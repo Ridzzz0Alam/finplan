@@ -135,7 +135,7 @@
   --brand-foreground: oklch(1 0 0);
   --ink: oklch(0.19 0.06 292);            /* deep plum-navy #130e2b */
   --cream: oklch(0.98 0.012 45);          /* warm off-white #fff6f1 */
-  --lime: oklch(0.94 0.17 119);           /* accent lime    #d6ff79 */
+  --lime: #cfff04;                        /* brand lime, from public/logo.svg */
 
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
@@ -153,7 +153,7 @@
   --brand-foreground: oklch(1 0 0);
   --ink: oklch(0.19 0.06 292);
   --cream: oklch(0.24 0.04 292);
-  --lime: oklch(0.94 0.17 119);
+  --lime: #cfff04;
 
   --background: var(--ink);
   --primary: var(--brand);

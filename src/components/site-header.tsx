@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { ArrowRightIcon } from "lucide-react";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -18,6 +18,27 @@ type Panel = "menu" | "language" | null;
  * background or its white text would land on white.
  */
 const heroRoutes = new Set(["/"]);
+
+/**
+ * The bar rides taller over a hero and condenses once the page scrolls. Both
+ * sets live here as custom properties so the height, the icons, the labels and
+ * the logo all shrink from one source and can each transition.
+ */
+const roomy: CSSProperties = {
+  "--bar-height": "6rem",
+  "--bar-icon": "1.5rem",
+  "--bar-label": "1rem",
+  "--logo-badge": "2.25rem",
+  "--logo-text": "1.5rem",
+} as CSSProperties;
+
+const compact: CSSProperties = {
+  "--bar-height": "4rem",
+  "--bar-icon": "1.25rem",
+  "--bar-label": "0.875rem",
+  "--logo-badge": "1.75rem",
+  "--logo-text": "1.125rem",
+} as CSSProperties;
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -85,6 +106,7 @@ export function SiteHeader() {
 
   return (
     <header
+      style={blendsWithHero ? roomy : compact}
       className={cn(
         "fixed inset-x-0 top-0 z-50 text-white transition-colors duration-300",
         panel
@@ -94,12 +116,14 @@ export function SiteHeader() {
             : "bg-ink/65 backdrop-blur-sm"
       )}
     >
-      {/* Full-bleed bar: menu and language on the left, logo centred on the
-          viewport, contact on the right. Items align to the top of the bar so
-          the panels below can expand it downwards. */}
-      <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-4 px-4 sm:px-6">
-        <div className="flex items-start gap-1 justify-self-start">
-          <div className="flex h-16 items-center">
+      {/* Menu and language on the left, logo centred on the viewport, contact
+          on the right, inside a wide centred container. Items align to the top
+          of the bar so the panels below can expand it downwards. The negative
+          margins pull the buttons' padding back so their glyphs, not their
+          hover boxes, line up with the container edge. */}
+      <div className="mx-auto grid w-full max-w-[97.5rem] grid-cols-[1fr_auto_1fr] items-start gap-4 px-4 sm:px-6">
+        <div className="-ml-2 flex items-start gap-9 justify-self-start">
+          <div className="flex h-(--bar-height) items-center transition-[height] duration-300 ease-out">
             <SiteMenuTrigger open={menuOpen} onToggle={toggleMenu} />
           </div>
           <LanguageSwitcher
@@ -108,17 +132,22 @@ export function SiteHeader() {
           />
         </div>
 
-        <Logo inverted className="h-16 justify-self-center text-white" />
+        {/* No transition utility here: it would override the Logo's own
+            transition-all via tailwind-merge and the type would snap. */}
+        <Logo
+          inverted
+          className="h-(--bar-height) justify-self-center text-white"
+        />
 
-        <div className="flex h-16 items-center justify-self-end">
+        <div className="-mr-2 flex h-(--bar-height) items-center justify-self-end transition-[height] duration-300 ease-out">
           <Link
             href="/contact"
             aria-label="Contact us"
             onClick={() => setPanel(null)}
-            className="flex h-10 items-center gap-2 rounded-sm px-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
+            className="flex h-10 items-center gap-2 rounded-sm px-2 text-(length:--bar-label) font-medium text-white transition-all duration-300 ease-out hover:bg-white/10"
           >
             <span className="hidden sm:inline">Contact us</span>
-            <ArrowRightIcon className="size-5" />
+            <ArrowRightIcon className="size-(--bar-icon) transition-all duration-300 ease-out" />
           </Link>
         </div>
       </div>

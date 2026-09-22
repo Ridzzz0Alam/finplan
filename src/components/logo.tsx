@@ -1,35 +1,64 @@
 import Link from "next/link";
 
-import { siteConfig } from "@/lib/site";
 import { cn } from "cn";
+
+/**
+ * The mark from public/logo.svg, inlined. The file paints its wordmark white,
+ * which vanishes on the light footer, and its baked-in text renders about 5px
+ * tall at header size; inlining the mark and typesetting the wordmark live
+ * keeps one source that stays legible and takes the surrounding colour.
+ */
+const MARK_PATH =
+  "M127.8,35.7c-.3-6.5-3-9.3-9.3-9.3H60.9c-6.5,0-9.1,2.8-9.3,9.2-.1,4.4,0,8.8,0,13.7-5.1,0-9.4-.1-13.6,0-5.9.2-8.5,2.7-8.8,8.6a112.2,112.2,0,0,0,0,11.6c.2,7.3,3.1,10,10.5,10h57v15h-17c-4.1.1-5.1,1.4-5.1,5.4v17H59.4c0-8.2.1-16.1,0-24,0-4.7-1.6-8.6-7.8-8.7v31.7c.3,6.2,2.9,8.8,9,9H73.4c5.6-.2,8.1-2.6,8.3-8.2.2-4.8.1-9.6.1-14.6h5.7c17.9.1,17.9,0,17.4-18-.3-9.8-2.5-12.5-12.2-12.5H59.4c-1.6-8.8-2.5-9.6-8-9.4v9.2H36.9V56.6h79.6c8.4,0,11.1-2.8,11.3-11.2,0-3.3.1-6.6,0-9.9h0Zm-8.2,13.2H59.4V34.5h60.2Z";
+
+/** Bounding box of the mark alone, so it crops square with no dead space. */
+const MARK_VIEWBOX = "29 26.4 98.8 98.5";
+
+export function LogoMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox={MARK_VIEWBOX}
+      aria-hidden
+      className={cn("shrink-0", className)}
+    >
+      <path d={MARK_PATH} fill="currentColor" />
+    </svg>
+  );
+}
 
 export function Logo({
   className,
   inverted = false,
+  withTagline = false,
 }: {
   className?: string;
   inverted?: boolean;
+  /** Adds the ENGINEERING SOLUTIONS line. Too wide for the header bar. */
+  withTagline?: boolean;
 }) {
   return (
     <Link
       href="/"
+      aria-label="FinPlan Engineering Solutions, home"
       className={cn(
-        "flex items-center gap-2 font-heading text-lg font-bold tracking-tight",
+        "flex items-center gap-2 font-heading text-[length:var(--logo-text,1.125rem)] font-bold tracking-tight transition-all duration-300 ease-out",
         className
       )}
     >
-      <span
-        aria-hidden
+      <LogoMark
         className={cn(
-          "grid size-7 place-items-center rounded-sm font-sans text-xs font-bold",
-          inverted
-            ? "bg-white/15 text-white ring-1 ring-white/30"
-            : "bg-primary text-primary-foreground"
+          "size-[var(--logo-badge,1.75rem)] transition-all duration-300 ease-out",
+          inverted ? "text-lime" : "text-ink"
         )}
-      >
-        FP
+      />
+      <span className="flex flex-col leading-none">
+        <span>FINPLAN</span>
+        {withTagline && (
+          <span className="mt-1 font-sans text-[0.5rem] font-medium tracking-[0.18em] opacity-70">
+            ENGINEERING SOLUTIONS
+          </span>
+        )}
       </span>
-      {siteConfig.name}
     </Link>
   );
 }

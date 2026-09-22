@@ -31,15 +31,15 @@ export function LanguageSwitcher({
       onOpenChange={onOpenChange}
       className="flex flex-col"
     >
-      <div className="flex h-16 items-center">
+      <div className="flex h-(--bar-height) items-center transition-[height] duration-300 ease-out">
         <Collapsible.Trigger
           aria-label={open ? "Close language menu" : `Language: ${current.label}`}
-          className="flex h-10 items-center gap-2 rounded-sm px-2 text-sm font-medium text-white transition-colors outline-none hover:bg-white/10 focus-visible:bg-white/10"
+          className="flex h-10 items-center gap-2 rounded-sm px-2 text-(length:--bar-label) font-medium text-white transition-all duration-300 ease-out outline-none hover:bg-white/10 focus-visible:bg-white/10"
         >
           {open ? (
-            <XIcon className="size-5" />
+            <XIcon className="size-(--bar-icon) transition-all duration-300 ease-out" />
           ) : (
-            <GlobeIcon className="size-5" />
+            <GlobeIcon className="size-(--bar-icon) transition-all duration-300 ease-out" />
           )}
           <span className="hidden sm:inline">
             {open ? "Close" : current.label}

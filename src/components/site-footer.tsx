@@ -9,7 +9,7 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-border/60 bg-muted/30">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-3">
-          <Logo />
+          <Logo withTagline />
           <p className="max-w-xs text-sm text-muted-foreground">
             {siteConfig.description}
           </p>
