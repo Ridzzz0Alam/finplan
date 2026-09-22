@@ -209,3 +209,57 @@
     scroll-padding-inline-start: calc((100vw - 80rem) / 2 + 1.5rem);
   }
 }
+
+/* Header menu choreography. Kept as plain keyframes rather than utilities so
+   the stagger can be driven by an inline animation-delay per item. */
+@keyframes menu-panel-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes menu-panel-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes menu-column-in {
+  from {
+    opacity: 0;
+    transform: translateX(-1.25rem);
+  }
+}
+
+@keyframes menu-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.7rem);
+  }
+}
+
+.menu-panel {
+  animation: menu-panel-in 220ms ease-out both;
+}
+
+/* The panel stays mounted for the length of this fade, then unmounts. */
+.menu-panel[data-closing] {
+  animation: menu-panel-out 160ms ease-in forwards;
+}
+
+.menu-column {
+  animation: menu-column-in 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.menu-item {
+  animation: menu-item-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-panel,
+  .menu-panel[data-closing],
+  .menu-column,
+  .menu-item {
+    animation: none;
+  }
+}

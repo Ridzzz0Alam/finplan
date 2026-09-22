@@ -50,10 +50,14 @@ export function LanguageSwitcher({
       <Collapsible.Panel className="h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0">
         {/* pl-9 lines the locales up with the trigger's label, past its icon. */}
         <ul className="flex flex-col items-start pb-8 pl-9">
-          {languages.map((language) => {
+          {languages.map((language, index) => {
             const active = language.code === code;
             return (
-              <li key={language.code}>
+              <li
+                key={language.code}
+                className="menu-item"
+                style={{ animationDelay: `${index * 40}ms` }}
+              >
                 <button
                   type="button"
                   aria-current={active ? "true" : undefined}
@@ -62,10 +66,10 @@ export function LanguageSwitcher({
                     onOpenChange(false);
                   }}
                   className={cn(
-                    "py-1.5 text-base transition-colors outline-none",
+                    "py-1.5 text-base transition-all duration-200 outline-none",
                     active
                       ? "text-lime underline underline-offset-4"
-                      : "text-white/80 hover:text-white focus-visible:text-white"
+                      : "text-white/80 hover:translate-x-1 hover:text-white focus-visible:text-white"
                   )}
                 >
                   {language.label}
