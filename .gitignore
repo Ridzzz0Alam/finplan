@@ -40,5 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# local screenshots
+# Local design references and screenshots, kept out of the repo.
 /screenshots/
